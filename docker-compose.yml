@@ -13,7 +13,7 @@ services:
       psql -U ${SPRING_DATASOURCE_USERNAME} -d main_db -c 'CREATE DATABASE account;' &&
       psql -U ${SPRING_DATASOURCE_USERNAME} -d main_db -c 'CREATE DATABASE client;'"
     ports:
-      - "5433:5432"
+      - "5432:5432"
     restart: always
 
   zookeeper:
