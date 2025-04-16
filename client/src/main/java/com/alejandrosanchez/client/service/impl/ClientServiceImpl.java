@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
@@ -36,6 +35,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public Client save(Client client) {
         String encryptedPassword = passwordEncoder.encode(client.getPassword());
         client.setPassword(encryptedPassword);
@@ -49,6 +49,7 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
+    @Transactional
     public boolean changeStatus(Long id, boolean active) {
         return clientRepository.findById(id).map(client -> {
             client.setActive(active);

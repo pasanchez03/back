@@ -7,7 +7,11 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 
 import java.time.LocalDateTime;
+import lombok.Setter;
+import lombok.Getter;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class Auditable {
 
@@ -32,13 +36,5 @@ public abstract class Auditable {
     @PreUpdate
     protected void onUpdate() {
         modificationDate = LocalDateTime.now();
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

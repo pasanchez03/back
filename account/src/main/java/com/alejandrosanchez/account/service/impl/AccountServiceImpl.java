@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
@@ -47,19 +46,24 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public Account save(Account account) {
+        ClientDTO client;
         try {
-            ClientDTO client = clientServiceClient.getClientById(account.getClientId()).getBody();
-            if (client == null || !client.getActive()) {
-                throw new IllegalArgumentException("Cliente no encontrada");
-            }
+            client = clientServiceClient.getClientById(account.getClientId()).getBody();
         } catch (FeignException.NotFound e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente no encontrado en client-service.");
         }
+
+        if (client == null || !Boolean.TRUE.equals(client.getActive())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cliente inactivo o inválido");
+        }
+
         return accountRepository.save(account);
     }
 
     @Override
+    @Transactional
     public Optional<Account> update(Long id, Account updatedAccount) {
         return getByIdAndActiveTrue(id).map(existingAccount -> {
             existingAccount.setAccountNumber(updatedAccount.getAccountNumber());
@@ -71,6 +75,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public boolean changeStatus(Long id, boolean active) {
         return accountRepository.findById(id).map(account -> {
             account.setActive(active);
@@ -106,6 +111,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public void updateAccountStatusByClientId(Long clientId, boolean active) {
         List<Account> accounts = accountRepository.findByClientId(clientId);
         for (Account account : accounts) {

@@ -8,12 +8,10 @@ services:
       POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
       POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
       POSTGRES_DB: main_db
-    command: >
-      bash -c "docker-entrypoint.sh postgres && 
-      psql -U ${SPRING_DATASOURCE_USERNAME} -d main_db -c 'CREATE DATABASE account;' &&
-      psql -U ${SPRING_DATASOURCE_USERNAME} -d main_db -c 'CREATE DATABASE client;'"
     ports:
       - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     restart: always
 
   zookeeper:
